@@ -1,0 +1,7 @@
+<h2>Inscription confirmée</h2>
+<p>Bonjour {{ user.firstName ?? user.email }},</p>
+<p>Tu es bien inscrit(e) à <strong>{{ event.title }}</strong>.</p>
+<p>Date : {{ event.startAt ? event.startAt|date('d/m/Y H:i') : '—' }}{% if event.endAt %} → {{ event.endAt|date('d/m/Y H:i') }}{% endif %}</p>
+<p>Ville : {{ event.city ?? '—' }}</p>
+<p>À très vite !</p>
+<p>L'équipe Evenmont</p>
