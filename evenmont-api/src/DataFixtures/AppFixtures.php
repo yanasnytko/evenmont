@@ -26,10 +26,9 @@ final class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        mt_srand(42); // déterministe
+    mt_srand(42); // déterministe
 
-        // === USERS ===========================================================
-        // 1 admin
+    // USERS
         $admin = (new User())
             ->setEmail('admin@evenmont.com')
             ->setFirstName('Admin')
@@ -39,7 +38,7 @@ final class AppFixtures extends Fixture
         $admin->setPassword($this->hasher->hashPassword($admin, 'adminpass'));
         $manager->persist($admin);
 
-        // 2 utilisateurs simples
+    // 2 utilisateurs simples
         $userA = (new User())
             ->setEmail('alice@example.com')
             ->setFirstName('Alice')->setLastName('Durand')
@@ -56,7 +55,7 @@ final class AppFixtures extends Fixture
         $userB->setPassword($this->hasher->hashPassword($userB, 'password'));
         $manager->persist($userB);
 
-        // 5 organisateurs
+    // 5 organisateurs
         $organizers = [];
         for ($i = 1; $i <= 5; $i++) {
             $u = (new User())
@@ -70,7 +69,7 @@ final class AppFixtures extends Fixture
             $organizers[] = $u;
         }
 
-        // === TAGS / CATEGORIES ==============================================
+    // TAGS / CATEGORIES
         $tagData = [
             ['Conférence', 'conference'],
             ['Atelier', 'atelier'],
@@ -85,7 +84,7 @@ final class AppFixtures extends Fixture
             $tags[] = $t;
         }
 
-        // === EVENTS ==========================================================
+    // EVENTS
         $cities = ['Chamonix', 'Grenoble', 'Annecy', 'Lyon', 'Gap', 'Briançon', 'Nice', 'Marseille'];
         $titles = [
             'Sunrise Hike & Brunch',
@@ -104,7 +103,7 @@ final class AppFixtures extends Fixture
 
         $events = [];
         $today = new \DateTimeImmutable('today 10:00:00');
-        $n = max(12, count($titles)); // au moins 12 évènements
+    $n = max(12, count($titles)); // au moins 12 évènements
 
         for ($i = 0; $i < $n; $i++) {
             $org = $organizers[$i % count($organizers)];
@@ -138,8 +137,7 @@ final class AppFixtures extends Fixture
             }
         }
 
-        // === REGISTRATIONS (quelques-unes pour tester) =======================
-        // userA inscrit à 2 events, userB à 1
+    // REGISTRATIONS (quelques-unes pour tester)
         if (!empty($events)) {
             $r1 = (new EventRegistration())
                 ->setEvent($events[0])
@@ -167,8 +165,7 @@ final class AppFixtures extends Fixture
             }
         }
 
-        // === (OPTIONNEL) autres entités — tu peux réactiver si tu veux ======
-        // // Exemple d’un ticket type rapide
+    // (OPTIONNEL) autres entités — à réactiver si besoin
         // if (isset($events[0])) {
         //     $tt = (new TicketType())
         //         ->setName('Standard')->setPrice('30.00')->setCurrency('EUR')

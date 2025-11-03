@@ -98,5 +98,18 @@ export const useAuth = defineStore('auth', {
         this.loading = false
       }
     },
+      async resendVerification(email) {
+        this.loading = true
+        try {
+          await api.post('/resend-verification', { email })
+          this.error = null
+          return true
+        } catch (e) {
+          this.error = e?.response?.data?.error || 'Erreur lors de l’envoi du mail.'
+          return false
+        } finally {
+          this.loading = false
+        }
+      },
   },
 })

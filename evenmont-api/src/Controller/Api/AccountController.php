@@ -77,7 +77,7 @@ final class AccountController extends AbstractController
                     <p>Bonjour {$this->escape($u->getFirstName() ?: '👋')},</p>
                     <p>Bienvenue sur <strong>EvenMont</strong> !</p>
                     <p>Merci de confirmer ton adresse email :</p>
-                    <p><a href="$verifyUrl">$verifyUrl</a></p>
+                    <p><a href="$verifyUrl" style="display:inline-block;padding:10px 18px;background:#2b7a2b;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Confirmer mon inscription</a></p>
                     <p>(lien valable 24h)</p>
                 HTML);
             $mailer->send($msg);
@@ -100,4 +100,41 @@ final class AccountController extends AbstractController
     {
         return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
+
+        #[Route('/resend-verification', name: 'api_resend_verification', methods: ['POST'])]
+        public function resendVerification(Request $req, UserRepository $users, MailerInterface $mailer): JsonResponse
+        {
+            $p = str_contains($req->headers->get('content-type', ''), 'application/json')
+                ? (json_decode($req->getContent(), true) ?? [])
+                : $req->request->all();
+            $email = strtolower(trim((string)($p['email'] ?? '')));
+            if ($email === '') {
+                return $this->json(['error' => 'email_required'], 422);
+            }
+            $u = $users->findOneBy(['email' => $email]);
+            if (!$u || $u->getEmailVerifiedAt()) {
+                return $this->json(['error' => 'user_not_found_or_already_verified'], 404);
+            }
+            // Regénère le token si expiré
+            $token = $u->getVerifyToken();
+            $exp = $u->getVerifyTokenExpiresAt();
+            if (!$token || !$exp || $exp < new \DateTimeImmutable()) {
+                $token = bin2hex(random_bytes(24));
+                $u->setVerifyToken($token);
+                $u->setVerifyTokenExpiresAt(new \DateTimeImmutable('+24 hours'));
+                $users->getEntityManager()->flush();
+            }
+            $verifyUrl = $req->getSchemeAndHttpHost() . '/api/verify-email?token=' . $token;
+            try {
+                $msg = (new Email())
+                    ->from('no-reply@evenmont.com')
+                    ->to($u->getEmail())
+                    ->subject('Vérifie ton email — EvenMont')
+                    ->html('<p>Bonjour,</p><p>Merci de confirmer ton adresse email :</p><p><a href="'.$verifyUrl.'">'.$verifyUrl.'</a></p><p>(lien valable 24h)</p>');
+                $mailer->send($msg);
+            } catch (\Throwable $e) {
+                return $this->json(['error' => 'mail_failed'], 500);
+            }
+            return $this->json(['success' => true]);
+        }
 }

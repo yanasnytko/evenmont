@@ -13,20 +13,20 @@ class RegistrationService
     public function __construct(
         private EntityManagerInterface $em,
         private EventRegistrationRepository $regs,
-        private RegistrationMailer $mailer, // on le crée en §3
+        private RegistrationMailer $mailer,
     ) {}
 
     /** @return array{registration: EventRegistration, created: bool} */
     public function register(User $user, Event $event): array
     {
-        // 1) Garde-fous
+    // Garde-fous
         if ($event->isPast()) {
             throw new \RuntimeException('event_past');
         }
         if ($event->getOrganizer() && $event->getOrganizer()->getId() === $user->getId()) {
             throw new \RuntimeException('organizer_cannot_register');
         }
-        // capacité (si tu l’utilises) => on compte uniquement confirmed (ou pending, à ta convenance)
+    // Capacité : on compte uniquement confirmed (ou pending)
         if ($event->getCapacity()) {
             $count = $this->regs->countByEventAndStatus($event, ['confirmed']);
             if ($count >= $event->getCapacity()) {
@@ -34,13 +34,13 @@ class RegistrationService
             }
         }
 
-        // 2) Idempotence (unique(event,user))
+    // Idempotence (unique(event,user))
         $existing = $this->regs->findOneBy(['event' => $event, 'user' => $user]);
         if ($existing) {
             return ['registration' => $existing, 'created' => false];
         }
 
-        // 3) Création
+    // Création
         $reg = (new EventRegistration())
             ->setEvent($event)
             ->setUser($user)
@@ -49,7 +49,7 @@ class RegistrationService
         $this->em->persist($reg);
         $this->em->flush();
 
-        // 4) Emails
+    // Emails
         $this->mailer->sendUserConfirmation($user, $event, $reg);
         $this->mailer->sendOrganizerNotification($event, $reg);
 
@@ -67,7 +67,7 @@ class RegistrationService
         $reg->setStatus('cancelled');
         $this->em->flush();
 
-        // (option) mail d’annulation
+    // Mail d’annulation
         $this->mailer->sendUserCancellation($user, $reg->getEvent(), $reg);
     }
 }

@@ -32,7 +32,7 @@ final class VerifyEmailController
         $u->setVerifyTokenExpiresAt(null);
         $em->flush();
 
-        $html = '<h1>Email vérifié</h1><p>Tu peux maintenant te connecter : <a href="http://localhost:5173/login">login</a>.</p>';
-        return new Response($html, 200);
+        $html = '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="2;url=https://isl.yanasnytko.com/login"><title>Email vérifié</title><style>body{font-family:sans-serif;background:#f6f6f6;text-align:center;padding-top:80px;}h1{color:#2b7a2b;}a.btn{display:inline-block;padding:10px 18px;background:#2b7a2b;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;margin-top:18px;}</style></head><body><h1>Email vérifié !</h1><p>Tu peux maintenant te connecter.</p><a class="btn" href="https://isl.yanasnytko.com/login">Aller à la connexion</a><p style="color:#888;margin-top:24px;font-size:14px">Redirection automatique…</p></body></html>';
+    return new Response($html, 200);
     }
 }
