@@ -19,6 +19,17 @@ composer.lock
 /evenmont-web/node_modules/
 /evenmont-web/dist/
 /evenmont-web/.vite/
+/evenmont-web/.env.production
+/evenmont-web/.env.test
+/evenmont-api/.env.production
+/evenmont-api/.env.test
+/evenmont-api/config/jwt/
+/evenmont-api/config/ovhconfig.txt
+/evenmont-api/config/packages/ovhconfig.txt
+/evenmont-api/var/log/
+/evenmont-api/var/cache/
+/evenmont-web/.cache/
+/.ovhconfig
 # IDE / Editor
 .vscode/
 .idea/
