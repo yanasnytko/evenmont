@@ -1,0 +1,31 @@
+# Symfony / PHP
+/vendor/
+/var/
+.env
+.env.local
+.env.*.local
+.env.test
+.env.dev
+.env.prod
+.phpunit.result.cache
+/public/uploads/
+/public/img/
+/node_modules/
+.DS_Store
+*.log
+*.cache
+composer.lock
+# Vite / Node.js
+/evenmont-web/node_modules/
+/evenmont-web/dist/
+/evenmont-web/.vite/
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+# Misc
+*.bak
+*.tmp
+*.swp
+Thumbs.db
